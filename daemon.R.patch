@@ -1,6 +1,6 @@
---- daemon.R	2017-06-22 14:56:45.153066261 +0100
-+++ daemon_fix.R	2017-06-22 14:54:59.496298585 +0100
-@@ -30,8 +30,40 @@
+--- daemon.R_orig	2017-06-22 15:13:54.023186000 +0100
++++ daemon.R_fix	2017-07-26 10:31:55.285177436 +0100
+@@ -30,8 +30,50 @@
  inputCon <- socketConnection(
      port = port, open = "rb", blocking = TRUE, timeout = connectionTimeout)
  
@@ -28,21 +28,31 @@
 +  # any worker is running or right before launching other worker children from the following
 +  # new socket connection.
 +
-+  # Only the process IDs of exited children are returned and the termination is attempted below.
++  # The process IDs of exited children are returned below.
 +  children <- parallel:::selectChildren(timeout = 0)
++
 +  if (is.integer(children)) {
-+    # If it is PIDs, there are workers exited but not terminated. Attempts to terminate them
-+    # by setting SIGUSR1.
-+    lapply(children, function(c) { tools::pskill(c, tools::SIGUSR1) })
++    lapply(children, function(child) {
++      # This should be the PIDs of exited children. Otherwise, this returns raw bytes if any data
++      # was sent from this child. In this case, we discard it.
++      pid <- parallel:::readChild(child)
++      if (is.integer(pid)) {
++        # This checks if the data from this child is the same pid of this selected child.
++        if (child == pid) {
++          # If so, we terminate this child.
++          tools::pskill(child, tools::SIGUSR1)
++        }
++      }
++    })
 +  } else if (is.null(children)) {
-+    # If it is NULL, there are no such workers. Waits indefinitely for a socket connecion.
++    # If it is NULL, there are no children. Waits indefinitely for a socket connecion.
 +    selectTimeout <- NULL
 +  }
 +
    if (ready) {
      port <- SparkR:::readInt(inputCon)
      # There is a small chance that it could be interrupted by signal, retry one time
-@@ -44,12 +76,15 @@
+@@ -44,12 +86,15 @@
      }
      p <- parallel:::mcfork()
      if (inherits(p, "masterProcess")) {
