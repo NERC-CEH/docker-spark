@@ -34,12 +34,12 @@ if [ $(id -u) == 0 ] ; then
   echo "Execute the command as $SPARK_USER"
   exec su $SPARK_USER -c "env PATH=$PATH $*"
 else
-if [[ ! -z "$SPARK_UID" && "$SPARK_UID" != "$(id -u)" ]]; then
-  echo 'Container must be run as root to set $SPARK_UID'
-fi
-if [[ ! -z "$SPARK_GID" && "$SPARK_GID" != "$(id -g)" ]]; then
-  echo 'Container must be run as root to set $SPARK_GID'
-fi
+  if [[ ! -z "$SPARK_UID" && "$SPARK_UID" != "$(id -u)" ]]; then
+    echo 'Container must be run as root to set $SPARK_UID'
+  fi
+  if [[ ! -z "$SPARK_GID" && "$SPARK_GID" != "$(id -g)" ]]; then
+    echo 'Container must be run as root to set $SPARK_GID'
+  fi
   echo "Execute the command"
   exec $*
 fi
