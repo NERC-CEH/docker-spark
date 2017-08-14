@@ -24,11 +24,6 @@ ENV SPARK_NO_DAEMONIZE 1
 RUN useradd -m -s /bin/bash -N -u $SPARK_UID $SPARK_USER &&\
     chown -R $SPARK_USER $SPARK_HOME
 
-# Install Tini
-RUN wget -O /tmp/tini https://github.com/krallin/tini/releases/download/v0.15.0/tini && \
-    mv /tmp/tini /usr/bin/tini && \
-    chmod +x /usr/bin/tini
-
 # Patch SparkR to fix issue -- https://issues.apache.org/jira/browse/SPARK-21093
 ADD daemon.R.patch /opt/spark/R/lib/SparkR/worker
 RUN patch -b /opt/spark/R/lib/SparkR/worker/daemon.R /opt/spark/R/lib/SparkR/worker/daemon.R.patch
