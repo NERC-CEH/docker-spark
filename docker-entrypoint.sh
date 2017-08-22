@@ -2,9 +2,7 @@
 
 unset SPARK_MASTER_PORT
 
-ROLE="${SPARK_ROLE:?Must be set to MASTER or WORKER}"
-
-if [ ${ROLE} = "MASTER" ]; then
+if [ "$SPARK_ROLE" = "MASTER" ]; then
   echo "MASTER Node"
   /opt/spark/sbin/start-master.sh --ip spark-master --port 7077
 else
