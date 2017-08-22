@@ -47,6 +47,7 @@ else
   if [[ ! -z "$SPARK_GID" && "$SPARK_GID" != "$(id -g)" ]]; then
     echo 'Container must be run as root to set $SPARK_GID'
   fi
-  echo "Need to be run as root"
+  echo "This container needs to be run as the root user to allow configuration prior to starting Spark."
+  echo "Use '--user root' flag for Docker or set the securityContext annotation for Kubernetes."
   exit 1
 fi
