@@ -6,6 +6,13 @@ set -e
 
 # If root user
 if [ $(id -u) == 0 ] ; then
+  # Alter host file for Spark Master
+  ROLE="${SPARK_ROLE:?Must be set to MASTER or WORKER}"
+  if [ ${ROLE} = "MASTER" ]; then
+    echo "Setting localhost to spark-master"
+    echo "$(hostname -i) spark-master" >> /etc/hosts
+  fi
+
   # Only the username "datalab" was created in docker build, 
   # therefore rename "datalab" to $SPARK_USER
   usermod -d /home/$SPARK_USER -l $SPARK_USER datalab
@@ -40,6 +47,6 @@ else
   if [[ ! -z "$SPARK_GID" && "$SPARK_GID" != "$(id -g)" ]]; then
     echo 'Container must be run as root to set $SPARK_GID'
   fi
-  echo "Execute the command"
-  exec $*
+  echo "Need to be run as root"
+  exit 1
 fi
