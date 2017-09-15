@@ -1,4 +1,4 @@
-FROM nerc/spark-core:2.1.0.2
+FROM nerc/spark-core:2.1.0.3
 
 LABEL maintainer "gareth.lloyd@stfc.ac.uk"
 
