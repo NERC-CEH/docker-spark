@@ -12,8 +12,10 @@ ENV PATH $PATH:/opt/spark/bin
 ENV SPARK_NO_DAEMONIZE 1
 
 # Add datalab user
-RUN useradd -m -s /bin/bash -N -u $SPARK_UID $SPARK_USER &&\
-    chown -R $SPARK_USER $SPARK_HOME
+RUN R_LIB_SITE_FIXED=$(R --slave -e "write(gsub('%v', R.version\$minor,Sys.getenv('R_LIBS_SITE')), stdout())") && \
+	useradd -m -s /bin/bash -N -u $SPARK_UID $SPARK_USER && \
+    chown -R $SPARK_USER $SPARK_HOME && \
+    chown -R $SPARK_USER $R_LIB_SITE_FIXED
 
 # # Expose ports for monitoring.
 # # SparkContext web UI on 4040 -- only available for the duration of the application.
