@@ -1,4 +1,4 @@
-FROM nerc/spark-core:2.1.0.2
+FROM nerc/spark-core:2.1.0.3
 
 LABEL maintainer "gareth.lloyd@stfc.ac.uk"
 
@@ -12,8 +12,10 @@ ENV PATH $PATH:/opt/spark/bin
 ENV SPARK_NO_DAEMONIZE 1
 
 # Add datalab user
-RUN useradd -m -s /bin/bash -N -u $SPARK_UID $SPARK_USER &&\
-    chown -R $SPARK_USER $SPARK_HOME
+RUN useradd -m -s /bin/bash -N -u $SPARK_UID $SPARK_USER && \
+    chown -R $SPARK_USER $SPARK_HOME && \
+    mkdir -p $R_LIBS_SITE_USER && \
+    chown -R $SPARK_USER $R_LIBS_SITE_USER
 
 # # Expose ports for monitoring.
 # # SparkContext web UI on 4040 -- only available for the duration of the application.

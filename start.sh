@@ -23,7 +23,7 @@ if [ $(id -u) == 0 ] ; then
     usermod -u $SPARK_UID $SPARK_USER
 
     # Fix permissions for home and spark directories
-    for d in "$SPARK_HOME" "/home/$SPARK_USER"; do
+    for d in "$SPARK_HOME" "$R_LIBS_SITE_USER" "/home/$SPARK_USER"; do
       if [[ ! -z "$d" && -d "$d" ]]; then
         echo "Set ownership to uid $SPARK_UID: $d"
         chown -R $SPARK_UID "$d"
